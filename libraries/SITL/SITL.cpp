@@ -56,6 +56,8 @@ const AP_Param::GroupInfo SITL::var_info[] PROGMEM = {
     AP_GROUPINFO("RC_FAIL",       25, SITL,  rc_fail, 0),
     AP_GROUPINFO("GPS2_ENABLE",   26, SITL,  gps2_enable, 0),
     AP_GROUPINFO("BARO_DISABLE",  27, SITL,  baro_disable, 0),
+    AP_GROUPINFO("FLOAT_EXCEPT",  28, SITL,  float_exception, 1),
+    AP_GROUPINFO("MAG_MOT",       29, SITL,  mag_mot, 0),
     AP_GROUPEND
 };
 

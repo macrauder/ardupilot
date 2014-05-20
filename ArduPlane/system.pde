@@ -116,16 +116,10 @@ static void init_ardupilot()
     check_usb_mux();
 
     // we have a 2nd serial port for telemetry
-    hal.uartC->begin(map_baudrate(g.serial1_baud, SERIAL1_BAUD),
-                     128, SERIAL1_BUFSIZE);
-    gcs[1].init(hal.uartC);
+    gcs[1].setup_uart(hal.uartC, map_baudrate(g.serial1_baud, SERIAL1_BAUD), 128, SERIAL1_BUFSIZE);
 
 #if MAVLINK_COMM_NUM_BUFFERS > 2
-    if (hal.uartD != NULL) {
-        hal.uartD->begin(map_baudrate(g.serial2_baud, SERIAL2_BAUD),
-                         128, SERIAL2_BUFSIZE);        
-        gcs[2].init(hal.uartD);
-    }
+    gcs[2].setup_uart(hal.uartD, map_baudrate(g.serial2_baud, SERIAL2_BAUD), 128, SERIAL2_BUFSIZE);
 #endif
 
     mavlink_system.sysid = g.sysid_this_mav;
@@ -341,13 +335,9 @@ static void set_mode(enum FlightMode mode)
 
     case AUTO:
         auto_throttle_mode = true;
-        prev_WP_loc = current_loc;
-        // start the mission. Note that we use resume(), not start(),
-        // as the correct behaviour for plane when entering auto is to
-        // continue the mission. If the pilot wants to restart the
-        // mission they need to either use RST_MISSION_CH or change
-        // waypoint number to 0
-        mission.resume();
+        next_WP_loc = prev_WP_loc = current_loc;
+        // start or resume the mission, based on MIS_AUTORESET
+        mission.start_or_resume();
         break;
 
     case RTL:
@@ -472,6 +462,7 @@ static void startup_INS_ground(bool do_accel_init)
 
     ahrs.init();
     ahrs.set_fly_forward(true);
+    ahrs.set_vehicle_class(AHRS_VEHICLE_FIXED_WING);
     ahrs.set_wind_estimation(true);
 
     ins.init(style, ins_sample_rate);
