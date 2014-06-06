@@ -1,6 +1,6 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#define THISFIRMWARE "ArduCopter V3.2-rc1"
+#define THISFIRMWARE "ArduCopter V3.2-rc2"
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -115,6 +115,7 @@
 #include <AP_Mission.h>         // Mission command library
 #include <AP_Rally.h>           // Rally point library
 #include <AC_PID.h>             // PID library
+#include <AC_HELI_PID.h>        // Heli specific Rate PID library
 #include <AC_P.h>               // P library
 #include <AC_AttitudeControl.h> // Attitude control library
 #include <AC_AttitudeControl_Heli.h> // Attitude control library for traditional helicopter

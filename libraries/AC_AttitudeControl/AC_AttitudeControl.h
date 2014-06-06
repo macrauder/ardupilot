@@ -21,8 +21,8 @@
 #define AC_ATTITUDE_CONTROL_RATE_RP_MAX_DEFAULT         18000   // maximum rotation rate in roll/pitch axis requested by angle controller used in stabilize, loiter, rtl, auto flight modes
 #define AC_ATTITUDE_CONTROL_RATE_Y_MAX_DEFAULT          18000   // maximum rotation rate on yaw axis requested by angle controller used in stabilize, loiter, rtl, auto flight modes
 #define AC_ATTITUDE_CONTROL_SLEW_YAW_DEFAULT            1000    // constraint on yaw angle error in degrees.  This should lead to maximum turn rate of 10deg/sed * Stab Rate P so by default will be 45deg/sec.
-#define AC_ATTITUDE_CONTROL_ACCEL_RP_MAX_DEFAULT        90000   // default maximum acceleration for roll/pitch axis in centi-degrees/sec/sec
-#define AC_ATTITUDE_CONTROL_ACCEL_Y_MAX_DEFAULT         18000   // default maximum acceleration for yaw axis in centi-degrees/sec/sec
+#define AC_ATTITUDE_CONTROL_ACCEL_RP_MAX_DEFAULT        126000  // default maximum acceleration for roll/pitch axis in centi-degrees/sec/sec
+#define AC_ATTITUDE_CONTROL_ACCEL_Y_MAX_DEFAULT         36000   // default maximum acceleration for yaw axis in centi-degrees/sec/sec
 
 #define AC_ATTITUDE_RATE_CONTROLLER_TIMEOUT             1.0f    // body-frame rate controller timeout in seconds
 #define AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX          5000.0f // body-frame rate controller maximum output (for roll-pitch axis)
@@ -36,6 +36,9 @@
 
 #define AC_ATTITUDE_100HZ_DT                            0.0100f // delta time in seconds for 100hz update rate
 #define AC_ATTITUDE_400HZ_DT                            0.0025f // delta time in seconds for 400hz update rate
+
+#define AC_ATTITUDE_RATE_RP_PID_DTERM_FILTER            20      // D-term filter rate cutoff frequency for Roll and Pitch rate controllers
+#define AC_ATTITUDE_RATE_Y_PID_DTERM_FILTER             5       // D-term filter rate cutoff frequency for Yaw rate controller
 
 class AC_AttitudeControl {
 public:
@@ -70,7 +73,7 @@ public:
     //
 
     // set_dt - sets time delta in seconds for all controllers (i.e. 100hz = 0.01, 400hz = 0.0025)
-    void set_dt(float delta_sec) { _dt = delta_sec; }
+    void set_dt(float delta_sec);
 
     // init_targets - resets target angles to current angles
     void init_targets();
