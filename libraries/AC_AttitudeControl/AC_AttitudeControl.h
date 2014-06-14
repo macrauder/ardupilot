@@ -40,6 +40,8 @@
 #define AC_ATTITUDE_RATE_RP_PID_DTERM_FILTER            20      // D-term filter rate cutoff frequency for Roll and Pitch rate controllers
 #define AC_ATTITUDE_RATE_Y_PID_DTERM_FILTER             5       // D-term filter rate cutoff frequency for Yaw rate controller
 
+#define AC_ATTITUDE_CONTROL_RATE_BF_FF_DEFAULT          0       // body-frame rate feedforward disabled by default
+
 class AC_AttitudeControl {
 public:
 	AC_AttitudeControl( AP_AHRS &ahrs,
@@ -75,8 +77,11 @@ public:
     // set_dt - sets time delta in seconds for all controllers (i.e. 100hz = 0.01, 400hz = 0.0025)
     void set_dt(float delta_sec);
 
-    // init_targets - resets target angles to current angles
-    void init_targets();
+    // relax_bf_rate_controller - ensure body-frame rate controller has zero errors to relax rate controller output
+    void relax_bf_rate_controller();
+
+    // set_yaw_target_to_current_heading - sets yaw target to current heading
+    void set_yaw_target_to_current_heading() { _angle_ef_target.z = _ahrs.yaw_sensor; }
 
     //
     // methods to be called by upper controllers to request and implement a desired attitude
@@ -128,6 +133,12 @@ public:
     void rate_bf_roll_target(float rate_cds) { _rate_bf_target.x = rate_cds; }
     void rate_bf_pitch_target(float rate_cds) { _rate_bf_target.y = rate_cds; }
     void rate_bf_yaw_target(float rate_cds) { _rate_bf_target.z = rate_cds; }
+
+    // enable_bf_feedforward - enable or disable body-frame feed forward
+    void bf_feedforward(bool enable_or_disable) { _rate_bf_ff_enabled = enable_or_disable; }
+
+    // enable_bf_feedforward - enable or disable body-frame feed forward
+    void accel_limiting(bool enable_or_disable);
 
     //
     // throttle functions
@@ -228,12 +239,13 @@ protected:
     AP_Float            _slew_yaw;              // maximum rate the yaw target can be updated in Loiter, RTL, Auto flight modes
     AP_Float            _accel_rp_max;          // maximum rotation acceleration for earth-frame roll and pitch axis
     AP_Float            _accel_y_max;           // maximum rotation acceleration for earth-frame yaw axis
+    AP_Int8             _rate_bf_ff_enabled;    // Enable/Disable body frame rate feed forward
 
     // internal variables
     // To-Do: make rate targets a typedef instead of Vector3f?
     float               _dt;                    // time delta in seconds
     Vector3f            _angle_ef_target;       // angle controller earth-frame targets
-    Vector3f            _angle_bf_error;        // angle controller earth-frame targets
+    Vector3f            _angle_bf_error;        // angle controller body-frame error
     Vector3f            _rate_bf_target;        // rate controller body-frame targets
     Vector3f            _rate_ef_desired;       // earth-frame feed forward rates
     Vector3f            _rate_bf_desired;       // body-frame feed forward rates
